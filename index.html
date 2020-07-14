@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce website</title>
+    <link rel="stylesheet" type="text/css"  href="style.css">
+  </head>
+
+  <body onload="loadCategories();loadInitialPage();loadCartNumber()">
+    <div class="header">
+        <a href="index.html">
+          <div id="title">
+            <h1>E-commerce website</h1>
+          </div>
+        </a>
+      </td>
+  <div id="cart">
+    <a href="#" onclick="loadCart()"><img src="images/cart.png"/><p id="totalItem">0</p></a>
+  </div>
+</div>
+  <div id="entries">
+  <div class="left">
+		<div id="category">
+		</div>
+</div>
+  <div class="right">
+    <div id="List">
+    </div>
+
+    <div id="footer">
+      <a href="#" onclick="loadPreviousPage()">&ltPrevious Page</a>
+      <input type="number" id="Pages" onchange="loadSpecifiedPage()" name="tentacles" min="1" max="3" value="1">
+      <a href="#" onclick="loadNextPage()">Next Page></a>
+    </div>
+  </div>
+</div>
+    <script>
+    img="https://i.cs.hku.hk/~cylam/assignment1/";
+    curcat="Books";
+    function loadCategories() {
+      var xmlhttp;
+      if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+      } else {
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+
+      xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+          txt	=	"";
+          cata = JSON.parse(xmlhttp.responseText);
+          for	(i in cata){
+            txt+="<div id="+cata[i].itemCategory+" onclick=loadCategoryFirstPage(this)>"
+            txt+=cata[i].itemCategory;
+            txt+="</div><br>";
+          }
+          document.getElementById("category").innerHTML = txt;
+        }
+      }
+      xmlhttp.open("GET","handleCategoryDisplay.php",true);
+      xmlhttp.send();
+      }
+      function loadInitialPage() {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+          xmlhttp = new XMLHttpRequest();
+        } else {
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            txt	=	"";
+            item =  JSON.parse(xmlhttp.responseText);
+            for(var i in item){
+      				txt+="<div id="+item[i].itemID+">";
+              txt+="<img src="+img+item[i].itemImage+"><br>";
+      				txt+="<h3>"+item[i].itemName+"</h3><br>";
+              txt+="<h3>HKD"+item[i].itemPrice+"</h3><br>";
+              txt+="<h4>"+item[i].itemDescription+"</h4><br>";
+              txt+="<button onclick=addToCart(this)>Add to Cart</button>";
+      				txt+="</div>";
+      			}
+            document.getElementById("List").innerHTML = txt;
+          }
+        }
+        fcat=document.getElementById("category").innerHTML;
+        xmlhttp.open("GET","handleItemDisplay.php?show=First",true);
+        xmlhttp.send();
+        }
+
+        function loadCategoryFirstPage(elem) {
+          var xmlhttp;
+          if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+          } else {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+          }
+
+          xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+              txt	=	"";
+             item = JSON.parse(xmlhttp.responseText);
+              for(var i in item){
+                txt+="<div id="+item[i].itemID+">";
+                txt+="<img src="+item[i].itemImage+"><br>";
+      				  txt+="<h3>"+item[i].itemName+"</h3><br>";
+                txt+="<h3>HKD"+item[i].itemPrice+"</h3><br>";
+                txt+="<h4>"+item[i].itemDescription+"</h4><br>";
+                txt+="<button onclick=addToCart(this)>Add to Cart</button>";
+      				  txt+="</div>";
+      			}
+              document.getElementById("List").innerHTML = txt;
+            }
+          }
+          clist= elem.innerHTML;
+          curcat=clist;
+          xmlhttp.open("GET","handleItemDisplay.php?show="+clist,true);
+          xmlhttp.send();
+          }
+
+          function loadPreviousPage(){
+            var xmlhttp;
+            if (window.XMLHttpRequest) {
+              xmlhttp = new XMLHttpRequest();
+            } else {
+              xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+
+            xmlhttp.onreadystatechange = function () {
+              if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                txt	=	"";
+                item = JSON.parse(xmlhttp.responseText);
+                 for(var i in item){
+                   txt+="<div id="+item[i].itemID+">";
+                   txt+="<img src="+item[i].itemImage+"><br>";
+                   txt+="<h3>"+item[i].itemName+"</h3><br>";
+                   txt+="<h3>HKD"+item[i].itemPrice+"</h3><br>";
+                   txt+="<h4>"+item[i].itemDescription+"</h4><br>";
+                   txt+="<button onclick=addToCart(this)>Add to Cart</button>";
+                   txt+="</div>";
+               }
+                 document.getElementById("List").innerHTML = txt;
+              }
+            }
+            if(document.getElementById("Pages").value==1){
+
+            }else{
+              pnum=document.getElementById("Pages").value;
+              num=parseInt(pnum)-1;
+              document.getElementById("Pages").value= num.toString();
+              xmlhttp.open("GET","handleItemDisplay.php?show="+curcat+"&id="+num,true);
+              xmlhttp.send();
+              }
+            }
+            function loadNextPage(){
+              var xmlhttp;
+              if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+              } else {
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+              }
+
+              xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                  txt	=	"";
+                  item = JSON.parse(xmlhttp.responseText);
+                   for(var i in item){
+                     txt+="<div id="+item[i].itemID+">";
+                     txt+="<img src="+item[i].itemImage+"><br>";
+                     txt+="<h3>"+item[i].itemName+"</h3><br>";
+                     txt+="<h3>HKD"+item[i].itemPrice+"</h3><br>";
+                     txt+="<h4>"+item[i].itemDescription+"</h4><br>";
+                     txt+="<button onclick=addToCart(this)>Add to Cart</button>";
+                     txt+="</div>";
+                 }
+                   document.getElementById("List").innerHTML = txt;
+                }
+              }
+              if(document.getElementById("Pages").value==3){
+
+              }else{
+                pnum=document.getElementById("Pages").value;
+                num=parseInt(pnum)+1;
+                document.getElementById("Pages").value= num.toString();
+                xmlhttp.open("GET","handleItemDisplay.php?show="+curcat+"&id="+num,true);
+                xmlhttp.send();
+                }
+              }
+              function loadSpecifiedPage(){
+                var xmlhttp;
+                if (window.XMLHttpRequest) {
+                  xmlhttp = new XMLHttpRequest();
+                } else {
+                  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                xmlhttp.onreadystatechange = function () {
+                  if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    txt	=	"";
+                    item = JSON.parse(xmlhttp.responseText);
+                     for(var i in item){
+                       txt+="<div id="+item[i].itemID+">";
+                       txt+="<img src="+item[i].itemImage+"><br>";
+                       txt+="<h3>"+item[i].itemName+"</h3><br>";
+                       txt+="<h3>HKD"+item[i].itemPrice+"</h3><br>";
+                       txt+="<h4>"+item[i].itemDescription+"</h4><br>";
+                       txt+="<button onclick=addToCart()>Add to Cart</button>";
+                       txt+="</div>";
+                   }
+                     document.getElementById("List").innerHTML = txt;
+                  }
+                }
+                  pnum=document.getElementById("Pages").value;
+                  xmlhttp.open("GET","handleItemDisplay.php?show="+curcat+"&id="+pnum,true);
+                  xmlhttp.send();
+              }
+              function loadCartNumber() {
+                var xmlhttp;
+                if (window.XMLHttpRequest) {
+                  xmlhttp = new XMLHttpRequest();
+                } else {
+                  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                xmlhttp.onreadystatechange = function () {
+                  if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    document.getElementById("totalItem").innerHTML =  xmlhttp.responseText;
+                  }
+                }
+                xmlhttp.open("GET","handleAddToCart.php?itemID=0&updateNumber=0",true);
+                xmlhttp.send();
+              }
+              function addToCart(elem) {
+                var itemID = elem.parentNode.getAttribute('id');
+                var xmlhttp;
+                if (window.XMLHttpRequest) {
+                  xmlhttp = new XMLHttpRequest();
+                } else {
+                  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                xmlhttp.onreadystatechange = function () {
+                  if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    document.getElementById("totalItem").innerHTML = xmlhttp.responseText;
+                  }
+                }
+                var update=document.getElementById("updateNumber");
+                if(update){
+                  var updateNumber = update.value;
+                }else {
+                  var updateNumber = 1;
+                }
+                console.log(updateNumber);
+                xmlhttp.open("GET","handleAddToCart.php?itemID="+itemID+"&updateNumber="+updateNumber,true);
+                xmlhttp.send();
+              }
+              function loadCart() {
+                var xmlhttp;
+                if (window.XMLHttpRequest) {
+                  xmlhttp = new XMLHttpRequest();
+                } else {
+                  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                xmlhttp.onreadystatechange = function () {
+                  if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    document.getElementById("entries").innerHTML = xmlhttp.responseText;
+                  }
+                }
+                xmlhttp.open("GET","handleCartContent.php",true);
+                xmlhttp.send();
+              }
+    </script>
+  </body>
+</html>
